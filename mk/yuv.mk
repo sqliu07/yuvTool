@@ -21,7 +21,7 @@ ifeq ($(UNAME), Linux)
 		CFLAG+=-D__STDC_CONSTANT_MACROS
 	endif	
 	OUTPUT=$(OUTFILE)
-	CFLAG+=-D__LINUX__ -D__HAS_LOG__ -D_DEBUG -DHASNOT_UUID -march=core2 -Wno-unused-result
+	CFLAG+=-D__LINUX__ -D__HAS_LOG__ -DHASNOT_UUID -march=core2 -Wno-unused-result
 	CPPFLAG+=-std=gnu++0x -Wno-deprecated
 	LIBS += -pthread -lrt -lm -static-libgcc
 	# LDFLAG+=$(CFLAG) $(CPPFLAG) -static-libstdc++ -shared -Wl,-Bsymbolic
