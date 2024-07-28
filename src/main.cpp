@@ -2,13 +2,14 @@
 #include <thread>
 #include <queue>
 #include <mutex>
+#include <cstdlib>
 #include <condition_variable>
 
 #include "yuvTool.h"
 #include "os.h"
 
-const int w = 6000;
-const int h = 4000;
+static int w = 0;
+static int h = 0;
 
 // 定义一个结构体来存储文件名和完成状态
 struct FileData {
@@ -21,8 +22,8 @@ struct FileData {
         : filename(filename), processed(processed), endOfFiles(endOfFiles) {}
 };
 // 读取文件并将其加入队列
-void readFiles(std::queue<FileData>& fileQueue, const std::string& rootDir, const std::string& extension, std::mutex& mtx, std::condition_variable& cv) {
-    YUVtool* yt = new YUVtool();
+void readFiles(std::queue<FileData>& fileQueue, const std::string& rootDir, const std::string& extension, int width, int height, std::mutex& mtx, std::condition_variable& cv) {
+    YUVtool* yt = new YUVtool(width, height);
     
     auto files = yt->ListFilesInDirectory(rootDir, extension);
     
@@ -46,8 +47,8 @@ void readFiles(std::queue<FileData>& fileQueue, const std::string& rootDir, cons
 }
 
 // 处理文件
-void processFiles(std::queue<FileData>& fileQueue, std::mutex& mtx, std::condition_variable& cv) {
-    YUVtool* yt = new YUVtool();
+void processFiles(int width, int height, std::queue<FileData>& fileQueue, std::mutex& mtx, std::condition_variable& cv) {
+    YUVtool* yt = new YUVtool(width, height);
     
     while (true) {
         std::unique_lock<std::mutex> lock(mtx);
@@ -65,7 +66,7 @@ void processFiles(std::queue<FileData>& fileQueue, std::mutex& mtx, std::conditi
         }
         
         LOG_VERBOSE("Processing file: %s", data.filename.c_str());
-        yt->convert(data.filename, w, h, data.filename + "_wb.yuv");
+        yt->convert(data.filename, width, height, data.filename + "_wb.yuv");
         data.processed = true;
         lock.lock(); // 再次锁定以更新文件的状态
         cv.notify_all(); // 通知所有等待线程
@@ -78,11 +79,13 @@ int main(int argc, char* argvs[]) {
 #ifdef _DEBUG
     std::string rootDir = "/home/lsq/workspace/project/cppProj/yuvProcess/input"; // 默认当前文件夹路径
 #else
-    if (argc != 2) {
+    if (argc < 2) {
         LOG_ERROR("Invalid input!");
         return S_ERROR;
     }
   std::string rootDir = argvs[1];  
+  w = atoi(argvs[2]);
+  h = atoi(argvs[3]);
 #endif
     std::string extension = ".yuv"; // 默认文件后缀
     
@@ -90,8 +93,8 @@ int main(int argc, char* argvs[]) {
     std::mutex mtx;
     std::condition_variable cv;
     
-    std::thread readerThread(readFiles, std::ref(fileQueue), rootDir, extension, std::ref(mtx), std::ref(cv));
-    std::thread workerThread(processFiles, std::ref(fileQueue), std::ref(mtx), std::ref(cv));
+    std::thread readerThread(readFiles, std::ref(fileQueue), rootDir, extension, w, h, std::ref(mtx), std::ref(cv));
+    std::thread workerThread(processFiles, w, h, std::ref(fileQueue), std::ref(mtx), std::ref(cv));
     
     // 等待读取文件线程完成
     readerThread.join();

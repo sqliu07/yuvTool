@@ -1,6 +1,6 @@
 #include "yuvTool.h"
 
-YUVtool::YUVtool() {}
+YUVtool::YUVtool(int imgWidth, int imgHeight): width(imgWidth), height(imgHeight) {}
 
 YUVtool::~YUVtool() {}
 
