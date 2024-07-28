@@ -1,6 +1,3 @@
-#define PATH_MAX 65535
-
-#include <unistd.h>
 #include <iostream>
 #include <thread>
 #include <queue>
