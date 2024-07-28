@@ -1,12 +1,11 @@
 #include "yuvTool.h"
-
 YUVtool::YUVtool(int imgWidth, int imgHeight): width(imgWidth), height(imgHeight) {}
 
 YUVtool::~YUVtool() {}
 
 void YUVtool::convert(const std::string &inputFileName, const int width, const int height, const std::string &outputFileName) {
   std::vector<unsigned char> yuvData(width * height * 2); // yuv422p
-  readFile(inputFileName, yuvData);
+  readFile(inputFileName, yuvData, yuvData.size());
   std::vector<unsigned char> grayData = yuvData; // yuv422p
   for (size_t i = width * height; i < yuvData.size(); ++i) {
     grayData.at(i) = 128; // to gray
@@ -35,11 +34,18 @@ std::vector<std::string> YUVtool::ListFilesInDirectory(std::string strRoot, std:
   return vecFiles;
 }
 
-void YUVtool::readFile(const std::string &fileName, std::vector<unsigned char> &data) {
+void YUVtool::readFile(const std::string &fileName, std::vector<unsigned char> &data, int expectedSize) {
   std::ifstream file(fileName, std::ios::binary);
   if (!file) {
     throw std::runtime_error("Unable to open file: " + fileName);
   }
+  
+  file.seekg(0, std::ios::end);
+  size_t dataSize = file.tellg();
+  if (dataSize != expectedSize) {
+    LOG_ERROR("Unexpected image size!");
+  }
+  file.seekg(0, std::ios::beg);
   std::vector<unsigned char> copy((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
   data = copy;
   file.close();
