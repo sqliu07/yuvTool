@@ -14,10 +14,13 @@ LOCAL_MODULE := yuvTool
 # Set the include paths
 LOCAL_C_INCLUDES := ./src
 
+#set link libs
+LOCAL_LDLIBS := -llog
 # Set the compiler flags
-LOCAL_CFLAGS := -std=c++11 -DPIC -O2 -fPIC -fvisibility=hidden
-
+LOCAL_CFLAGS := -std=c++11 -DPIC -D__ANDROID__ -D__HAS_LOG__ -O2 -fPIC -fvisibility=hidden
 # Set the linker flags
-LOCAL_LDFLAGS := -Wl, -static-libgcc -static-libstdc++ -static
+LOCAL_LDFLAGS := -Wall, -static-libgcc -static-libstdc++
 # Define the build target
+
+# include external/libcxx/libcxx.mk
 include $(BUILD_EXECUTABLE)

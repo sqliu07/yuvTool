@@ -6,7 +6,7 @@
 #define S_ERROR      -1
 
 #include "yuvTool.h"
-#ifdef __linux
+#ifdef __LINUX__
 #include <cstdio>
 #include <iostream>
 #ifdef __HAS_LOG__
