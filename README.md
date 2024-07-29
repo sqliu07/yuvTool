@@ -8,5 +8,6 @@ The excutable files are in bin/yuvTool/linux/(x64/x86) for linux and bin/yuvTool
 
 You can use it like the following:
 ```
-./yuvTool /path/to/your/yuv/images
+./yuvTool /path/to/your/yuv/images image_width image_height
 ```
+You need to guarantee that all your images have same width and height.
