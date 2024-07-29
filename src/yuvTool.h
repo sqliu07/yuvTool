@@ -17,8 +17,8 @@ class YUVtool {
   void convert(const std::string& inputFileName, const int width, const int height, const std::string& outputFileName);
   std::vector<std::string> ListFilesInDirectory(std::string strRoot, std::string extn);
   private:
-  void readFile(const std::string& fileName, std::vector<unsigned char>& data, int expectedSize);
-  void writeFile(const std::string& fileName, const std::vector<unsigned char>& data);
+  bool readFile(const std::string& fileName, std::vector<unsigned char>& data, int expectedSize);
+  void writeFile(const std::string& fileName, const std::vector<unsigned char>& data, bool readStatus = false);
 
   int width = 1920;
   int height = 1080; //default width and height
