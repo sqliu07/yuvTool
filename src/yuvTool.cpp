@@ -1,13 +1,13 @@
 #include "yuvTool.h"
-YUVtool::YUVtool(int imgWidth, int imgHeight): width(imgWidth), height(imgHeight) {}
+YUVtool::YUVtool(INT32 imgWidth, INT32 imgHeight): m_Width(imgWidth), m_Height(imgHeight) {}
 
 YUVtool::~YUVtool() {}
 
-void YUVtool::convert(const std::string &inputFileName, const int width, const int height, const std::string &outputFileName) {
-  std::vector<unsigned char> yuvData(width * height * 2); // yuv422p
+VOID YUVtool::convert(const std::string &inputFileName, const INT32 m_Width, const INT32 m_Height, const std::string &outputFileName) {
+  std::vector<unsigned char> yuvData(m_Width * m_Height * 2); // yuv422p
   bool ret = readFile(inputFileName, yuvData, yuvData.size());
   std::vector<unsigned char> grayData = yuvData; // yuv422p
-  for (size_t i = width * height; i < yuvData.size(); ++i) {
+  for (size_t i = m_Width * m_Height; i < yuvData.size(); ++i) {
     grayData.at(i) = 128; // to gray
   }
   writeFile(outputFileName, grayData, ret);
@@ -34,7 +34,7 @@ std::vector<std::string> YUVtool::ListFilesInDirectory(std::string strRoot, std:
   return vecFiles;
 }
 
-bool YUVtool::readFile(const std::string &fileName, std::vector<unsigned char> &data, int expectedSize) {
+bool YUVtool::readFile(const std::string &fileName, std::vector<unsigned char> &data, INT32 expectedSize) {
   std::ifstream file(fileName, std::ios::binary);
   if (!file) {
     throw std::runtime_error("Unable to open file: " + fileName);
@@ -54,7 +54,7 @@ bool YUVtool::readFile(const std::string &fileName, std::vector<unsigned char> &
   return S_OK;
 }
 
-void YUVtool::writeFile(const std::string &fileName, const std::vector<unsigned char> &data, bool readStatus) {
+VOID YUVtool::writeFile(const std::string &fileName, const std::vector<unsigned char> &data, bool readStatus) {
   if (readStatus) return;
   std::ofstream file(fileName, std::ios::binary);
   if (!file) {
@@ -62,4 +62,8 @@ void YUVtool::writeFile(const std::string &fileName, const std::vector<unsigned 
   }
   file.write(reinterpret_cast<const char *>(data.data()), data.size());
   file.close();
+}
+
+INT32 YUVtool::yuv2jpeg(std::vector<unsigned char>& yuvData, std::vector<unsigned char>& jpegData, const INT32 width, const INT32 height) {
+  return 0;
 }
