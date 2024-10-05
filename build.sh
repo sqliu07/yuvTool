@@ -27,7 +27,9 @@ function build_android
   # Run ndk-build
   export PATH=$ANDROID_NDK:$PATH
   echo "compiling $PRODUCT for Android ..."
-  ndk-build -j8 NDK_DEBUG=0 NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=$MKDIR/android.mk NDK_APPLICATION_MK=$MKDIR/application.mk || exit 1
+  proc=$(nproc)
+  procs=$((2 * proc))
+  ndk-build -j"$procs" NDK_DEBUG=0 NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=$MKDIR/android.mk NDK_APPLICATION_MK=$MKDIR/application.mk || exit 1
   cp -rf libs/* $OUTDIR
   #clean
   rm -rf obj libs
@@ -54,7 +56,9 @@ function build_pc {
   
   cd $SRCDIR
   echo "compiling $OUTFILE for $OS..."
-  make -f $MKDIR/yuv.mk || exit 1
+  proc=$(nproc)
+  procs=$((2 * proc))
+  make -j"$procs" -f $MKDIR/yuv.mk || exit 1
   mv -f $SRCDIR/$OUTFILE $OUTDIR
   cd -
   #done
